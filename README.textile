@@ -13,48 +13,48 @@ just returns false for all permissions.
 h4. Example:
 
 <pre>
-  class User
+class User
+
+  include Roleful
   
-    include Roleful
-    
-    role :admin do
-      can :view_all_files
-      can :view_all_pages
-    end
-    
-    role :paid do
-      can :view_all_pages
-    end
-    
-    def initialize(name=nil)
-      @role = name
-    end
-    
-    def role
-      @role
-    end
-    
+  role :admin do
+    can :view_all_files
+    can :view_all_pages
   end
+  
+  role :paid do
+    can :view_all_pages
+  end
+  
+  def initialize(name=nil)
+    @role = name
+  end
+  
+  def role
+    @role
+  end
+  
+end
 </pre>
 
 <pre>
-  nil_user = User.new
-  nil_user.paid? # => false
-  nil_user.admin? # => false
-  nil_user.can_view_all_pages? # => false
-  nil_user.can_view_all_files? # => false
-  
-  paid_user = User.new(:paid)
-  paid_user.paid? # => true
-  paid_user.admin? # => false
-  paid_user.can_view_all_pages? # => true
-  paid_user.can_view_all_files? # => false
-  
-  admin_user = User.new(:admin)
-  admin_user.paid? # => false
-  admin_user.admin? # => true
-  admin_user.can_view_all_pages? # => true
-  admin_user.can_view_all_files # => true
+nil_user = User.new
+nil_user.paid? # => false
+nil_user.admin? # => false
+nil_user.can_view_all_pages? # => false
+nil_user.can_view_all_files? # => false
+
+paid_user = User.new(:paid)
+paid_user.paid? # => true
+paid_user.admin? # => false
+paid_user.can_view_all_pages? # => true
+paid_user.can_view_all_files? # => false
+
+admin_user = User.new(:admin)
+admin_user.paid? # => false
+admin_user.admin? # => true
+admin_user.can_view_all_pages? # => true
+admin_user.can_view_all_files # => true
 </pre>
 
 h3. TODO
