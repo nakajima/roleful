@@ -4,11 +4,13 @@ module Roleful
       extend(ClassMethods)
       include(InstanceMethods)
       const_set("ROLES", { })
-      define_null_role
+      define_role(:null)
     end
   end
   
   module InstanceMethods
+    private
+    
     def role_proxy
       name = role.to_sym rescue :null
       self.class::ROLES[name || :null]
@@ -23,21 +25,12 @@ module Roleful
     private
     
     def define_role(name, &block)
-      self::ROLES[name] ||= Role.new(self)
+      self::ROLES[name] ||= Role.new(self, name)
       self::ROLES[name].enhance(&block) if block_given?
     end
     
     def get_role(name)
       self::ROLES[name] || self::ROLES[:null]
-    end
-    
-    def define_null_role
-      define_role(:null) do
-        def self.method_missing(sym, *args)
-          method_id = sym.to_s
-          method_id.match(/can_[a-zA-Z_]+\?/) ? false : super
-        end
-      end
     end
   end
 end

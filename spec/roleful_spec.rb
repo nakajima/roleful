@@ -24,6 +24,23 @@ describe Roleful do
     klass::ROLES[:admin].should_not be_nil
   end
   
+  describe "role predicate helpers" do
+    before(:each) do
+      klass.role :admin
+    end
+    
+    it "return true if proper role" do
+      admin = klass.new
+      stub(admin).role { :admin }
+      admin.should be_admin
+    end
+    
+    it "returns if not proper role" do
+      non_admin = klass.new
+      non_admin.should_not be_admin
+    end
+  end
+  
   describe "delegating permissions to role" do
     before(:each) do
       klass.role(:admin) { can :view_foos }
