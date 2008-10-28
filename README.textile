@@ -1,0 +1,5 @@
+h1. Role-ful
+
+Roles for you and your objects.
+
+(c) Copyright 2008 Pat Nakajima, released under the MIT license
