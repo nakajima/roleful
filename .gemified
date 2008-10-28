@@ -1,0 +1,10 @@
+--- 
+:has_rdoc: false
+:summary: Generic roles for you and your objects
+:email: patnakajima@gmail.com
+:dependencies: 
+- metaid
+:homepage: http://github.com/nakajima/roleful
+:version: 0.0.1
+:name: roleful
+:author: Pat Nakajima

@@ -57,6 +57,12 @@ admin_user.can_view_all_pages? # => true
 admin_user.can_view_all_files # => true
 </pre>
 
+h3. Install
+
+  gem install nakajima-roleful --source=http://gems.github.com
+
+"View the CI build":http://ci.patnakajima.com/roleful
+
 h3. TODO
 
 * Multiple roles per object
