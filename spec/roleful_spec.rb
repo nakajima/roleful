@@ -93,6 +93,7 @@ describe Roleful do
     
     it "binding self to instance" do
       pending "figure out how to scope delegated methods"
+      
       klass.role :admin do
         can :be_self do |that|
           self == that

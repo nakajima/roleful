@@ -7,11 +7,7 @@ module Roleful
       @permissions = []
       define_predicate
     end
-  
-    def enhance(&block)
-      instance_eval(&block)
-    end
-  
+
     def can(permission, &block)
       permission_name = "can_#{permission}?"
       
