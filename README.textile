@@ -8,7 +8,8 @@ In your class, after including @Roleful@, declare your roles. It's up
 to you to implement a @role@ instance method for your objects that determines
 what kind of permissions they receive. If an object doesn't have a @role@ method,
 or if the @role@ returns an invalid role, the @:null@ role will be used, which
-just returns false for all permissions.
+just returns false for all permissions. If you specify a role as a @:superuser@,
+it will return true for all permissions.
 
 h4. Example:
 
@@ -16,6 +17,8 @@ h4. Example:
 class User
 
   include Roleful
+  
+  role :super_admin, :superuser => true
   
   role :admin do
     can :view_all_files
@@ -55,6 +58,12 @@ admin_user.paid? # => false
 admin_user.admin? # => true
 admin_user.can_view_all_pages? # => true
 admin_user.can_view_all_files # => true
+
+super_admin_user = User.new(:super_admin)
+super_admin_user.paid? # => false
+super_admin_user.admin? # => false
+super_admin_user.can_view_all_pages? # => true
+super_admin_user.can_view_all_files # => true
 </pre>
 
 h3. Install

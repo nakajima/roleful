@@ -1,9 +1,9 @@
 module Roleful
   class Role
-    attr_reader :name, :permissions
+    attr_reader :name, :permissions, :options
     
-    def initialize(klass, name)
-      @klass, @name = klass, name
+    def initialize(klass, name, options={})
+      @klass, @name, @options = klass, name, options
       @permissions = []
       define_predicate
     end
@@ -21,10 +21,13 @@ module Roleful
     
     def method_missing(sym, *args)
       method_id = sym.to_s
-      match_permission_or_predicate(method_id) ? false : super
+      match_permission_or_predicate(method_id) ? superuser? : super
     end
     
     private
+    def superuser?
+      options[:superuser]
+    end
     
     def match_permission_or_predicate(method_id)
       method_id.match(/can_[a-zA-Z_]+\?/) or method_id.match(/(#{@klass::ROLES.keys.join('|')})\?/)

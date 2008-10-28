@@ -18,14 +18,14 @@ module Roleful
   end
   
   module ClassMethods
-    def role(name, &block)
-      define_role(name.to_sym, &block)
+    def role(name, options={}, &block)
+      define_role(name.to_sym, options, &block)
     end
     
     private
     
-    def define_role(name, &block)
-      self::ROLES[name] ||= Role.new(self, name)
+    def define_role(name, options={}, &block)
+      self::ROLES[name] ||= Role.new(self, name, options)
       self::ROLES[name].enhance(&block) if block_given?
     end
   end

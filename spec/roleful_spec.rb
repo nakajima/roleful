@@ -53,13 +53,21 @@ describe Roleful do
     
     describe ":null role" do
       it "returns false when permission exists elsewhere" do
-        klass.new.can_view_foos?.should be_false
+        klass.new.can_view_foos?.should_not be
       end
 
       it "blows up when permission hasn't been declared" do
         proc {
-          klass.new.can_eat_cheese?.should be_false
+          klass.new.can_eat_cheese?
         }.should raise_error(NoMethodError)
+      end
+    end
+    
+    describe ":superuser role" do
+      it "is always true" do
+        klass.role(:super_admin, :superuser => true)
+        stub(object = klass.new).role { :super_admin }
+        object.can_view_foos?.should be_true
       end
     end
   end
