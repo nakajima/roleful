@@ -28,9 +28,5 @@ module Roleful
       self::ROLES[name] ||= Role.new(self, name)
       self::ROLES[name].enhance(&block) if block_given?
     end
-    
-    def get_role(name)
-      self::ROLES[name] || self::ROLES[:null]
-    end
   end
 end
