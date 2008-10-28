@@ -15,8 +15,7 @@ module Roleful
     def can(permission, &block)
       permission_name = "can_#{permission}?"
       
-      fn = block_given? ? block : proc { true }
-      meta_def(permission_name, &fn)
+      meta_def(permission_name, &(block || proc { true }))
       
       meta_delegate(permission_name)
       add_permission(permission)
