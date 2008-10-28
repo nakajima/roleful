@@ -12,9 +12,12 @@ module Roleful
       instance_eval(&block)
     end
   
-    def can(permission)
+    def can(permission, &block)
       permission_name = "can_#{permission}?"
-      meta_def(permission_name) { true }
+      
+      fn = block_given? ? block : proc { true }
+      meta_def(permission_name, &fn)
+      
       meta_delegate(permission_name)
       add_permission(permission)
     end

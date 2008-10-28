@@ -5,6 +5,12 @@ describe Roleful do
   
   before(:each) do
     @klass = Class.new do
+      attr_reader :role
+      
+      def initialize(role=nil)
+        @role = role
+      end
+      
       include Roleful
     end
   end
@@ -69,6 +75,32 @@ describe Roleful do
         stub(object = klass.new).role { :super_admin }
         object.can_view_foos?.should be_true
       end
+    end
+  end
+  
+  describe "with instance-specific permissions" do
+    it "taking a block" do
+      klass.role :admin do
+        can :equal_two do |sym|
+          :two == sym
+        end
+      end
+      
+      object = klass.new(:admin)
+      object.can_equal_two?(:one).should be_false
+      object.can_equal_two?(:two).should be_true
+    end
+    
+    it "binding self to instance" do
+      pending "figure out how to scope delegated methods"
+      klass.role :admin do
+        can :be_self do |that|
+          self == that
+        end
+      end
+      
+      object = klass.new(:admin)
+      object.can_be_self?(object).should be_true
     end
   end
 end
