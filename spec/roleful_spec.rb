@@ -36,13 +36,11 @@ describe Roleful do
     end
     
     it "return true if proper role" do
-      admin = klass.new(:admin)
-      admin.should be_admin
+      klass.new(:admin).should be_admin
     end
     
     it "returns if not proper role" do
-      non_admin = klass.new
-      non_admin.should_not be_admin
+      klass.new.should_not be_admin
     end
   end
   
@@ -56,10 +54,24 @@ describe Roleful do
       object.can_view_foos?.should be_true
     end
     
+    it "works with built-in null object" do
+      object = klass.new
+      object.can_view_foos?.should be_false
+    end
+    
     describe "#can?" do
-      it "returns true or false depending on the permission" do
-        object = klass.new(:admin)
-        object.can?(:view_foos).should be_true
+      context "as object with role" do
+        it "returns true or false depending on the permission" do
+          object = klass.new(:admin)
+          object.can?(:view_foos).should be_true
+        end
+      end
+      
+      context "as object without role" do
+        it "returns true or false depending on the permission" do
+          object = klass.new
+          object.can?(:view_foos).should be_false
+        end
       end
     end
     
@@ -85,23 +97,31 @@ describe Roleful do
   end
   
   describe "with instance-specific permissions" do
-    it "taking a block" do
+    before(:each) do
       klass.role :admin do
+        can(:be_self) { |that| self == that }
         can(:equal_two) { |sym| :two == sym }
       end
-      
+    end
+    
+    it "taking a block" do
       object = klass.new(:admin)
       object.can_equal_two?(:one).should be_false
       object.can_equal_two?(:two).should be_true
     end
     
-    it "binding self to instance" do
-      klass.role :admin do
-        can(:be_self) { |that| self == that }
+    context "as object with role" do
+      it "binding self to instance" do
+        object = klass.new(:admin)
+        object.can_be_self?(object).should be_true
       end
-      
-      object = klass.new(:admin)
-      object.can_be_self?(object).should be_true
+    end
+    
+    context "as object without role" do
+      it "binding self to instance" do
+        object = klass.new
+        object.can_be_self?(object).should be_false
+      end
     end
   end
 end

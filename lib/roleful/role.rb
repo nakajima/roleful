@@ -30,7 +30,7 @@ module Roleful
     end
     
     def superuser?
-      options[:superuser]
+      options[:superuser] || false # returns false, not nil
     end
     
     def match_permission_or_predicate(method_id)
