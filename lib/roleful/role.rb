@@ -11,7 +11,8 @@ module Roleful
     def can(permission, &block)
       permission_name = "can_#{permission}?"
       
-      meta_def(permission_name, &(block || proc { true }))
+      fn = block || proc { true }
+      meta_def(permission_name) { |target, *args| handle(target, *args, &fn) }
       
       meta_delegate(permission_name)
       add_permission(permission)
@@ -23,6 +24,11 @@ module Roleful
     end
     
     private
+    
+    def handle(target, *args, &block)
+      target.instance_exec(*args, &block)
+    end
+    
     def superuser?
       options[:superuser]
     end

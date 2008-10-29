@@ -6,7 +6,7 @@ class Module
     methods.each do |method|
       module_eval(<<-EOS, "(__DELEGATION__)", 1)
         def #{method}(*args, &block)
-          #{to}.__send__(#{method.inspect}, *args, &block)
+          #{to}.__send__(#{method.inspect}, self, *args, &block)
         end
       EOS
     end
