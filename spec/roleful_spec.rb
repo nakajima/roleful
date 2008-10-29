@@ -36,8 +36,7 @@ describe Roleful do
     end
     
     it "return true if proper role" do
-      admin = klass.new
-      stub(admin).role { :admin }
+      admin = klass.new(:admin)
       admin.should be_admin
     end
     
@@ -53,8 +52,15 @@ describe Roleful do
     end
     
     it "works for declared roles" do
-      stub(object = klass.new).role { :admin }
+      object = klass.new(:admin)
       object.can_view_foos?.should be_true
+    end
+    
+    describe "#can?" do
+      it "returns true or false depending on the permission" do
+        object = klass.new(:admin)
+        object.can?(:view_foos).should be_true
+      end
     end
     
     describe ":null role" do
@@ -72,7 +78,7 @@ describe Roleful do
     describe ":superuser role" do
       it "is always true" do
         klass.role(:super_admin, :superuser => true)
-        stub(object = klass.new).role { :super_admin }
+        object = klass.new(:super_admin)
         object.can_view_foos?.should be_true
       end
     end
@@ -81,9 +87,7 @@ describe Roleful do
   describe "with instance-specific permissions" do
     it "taking a block" do
       klass.role :admin do
-        can :equal_two do |sym|
-          :two == sym
-        end
+        can(:equal_two) { |sym| :two == sym }
       end
       
       object = klass.new(:admin)
@@ -93,9 +97,7 @@ describe Roleful do
     
     it "binding self to instance" do
       klass.role :admin do
-        can :be_self do |that|
-          self == that
-        end
+        can(:be_self) { |that| self == that }
       end
       
       object = klass.new(:admin)

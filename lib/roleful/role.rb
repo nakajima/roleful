@@ -40,6 +40,11 @@ module Roleful
     def define_predicate
       meta_def("#{name}?") { true }
       meta_delegate("#{name}?")
+      meta_delegate("can?")
+    end
+    
+    def can?(target, permission)
+      permissions.include?(permission)
     end
     
     def add_permission(name)
