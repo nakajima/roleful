@@ -156,10 +156,4 @@ h3. Install
 
 "View the CI build":http://ci.patnakajima.com/roleful
 
-h3. TODO
-
-* Multiple roles per object
-* Role contexts
-* More examples on how to use this type of role scheme
-
 (c) Copyright 2008 Pat Nakajima, released under the MIT license
