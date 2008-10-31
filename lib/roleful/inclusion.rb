@@ -10,13 +10,15 @@ module Roleful
   end
   
   module InstanceMethods
-    def with_role(tmp_role)
+    def with_role(*tmp_roles)
       old = role
-      self.meta_def(:role) { tmp_role }
+      self.meta_def(:role) { tmp_roles }
       result = yield
       self.meta_def(:role) { old }
       result
     end
+    
+    alias_method :with_roles, :with_role
 
     private
     

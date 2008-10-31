@@ -237,16 +237,40 @@ describe Roleful do
   
   describe "temporary role contexts" do
     before(:each) do
-      klass.role(:awesome) do
-        can :be_awesome
-      end
+      klass.role(:awesome) { can :be_awesome }
+      klass.role(:bad_ass) { can :be_bad_ass }
     end
     
     it "allows an object to have a role within a block" do
       object = klass.new
       object.can?(:be_awesome).should be_false
-      object.with_role(:awesome) { object.can?(:be_awesome).should be_true }
+      
+      spec = self
+      object.instance_eval do
+        with_role(:awesome) do
+          can?(:be_awesome).should spec.be_true
+        end
+      end
+
       object.can?(:be_awesome).should be_false
+    end
+    
+    it "works with multiple role contexts" do
+      object = klass.new
+      
+      object.can?(:be_awesome).should be_false
+      object.can?(:be_bad_ass).should be_false
+      
+      spec = self
+      object.instance_eval do
+        with_roles(:awesome, :bad_ass) do
+          can?(:be_awesome).should spec.be_true
+          can?(:be_bad_ass).should spec.be_true
+        end
+      end
+      
+      object.can?(:be_awesome).should be_false
+      object.can?(:be_bad_ass).should be_false
     end
   end
 end

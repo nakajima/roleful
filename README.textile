@@ -44,10 +44,10 @@ end
 gets you:
 
 <pre>
-User.new(:null).null? # => true
-User.new(:null).can?(:view_invoice) # => false
-User.new(:null).can_view_all_pages? # => false
-User.new(:null).can_view_all_files? # => false
+User.new.null? # => true
+User.new.can?(:view_invoice) # => false
+User.new.can_view_all_pages? # => false
+User.new.can_view_all_files? # => false
 
 User.new(:paid).paid? # => true
 User.new(:paid).can?(:view_invoice) # => true
@@ -148,6 +148,34 @@ you = User.new(:thinker)
 
 me.can_be_self?(me) # => true
 me.can_be_self?(you) # => false
+</pre>
+
+h3. Role contexts
+
+If you want to temporarily give an object a role, you can use the @with_role@
+method:
+
+<pre>
+class User
+  role :admin do
+    can :do_anything
+  end
+end
+</pre>
+
+<pre>
+user = User.new
+
+user.admin? # => false
+user.can_do_anything? # => false
+
+user.with_role(:admin) do
+  user.admin? # => true
+  user.can_do_anything? # => true
+end
+
+user.admin? # => false
+user.can_do_anything? # => false
 </pre>
 
 h3. Install
