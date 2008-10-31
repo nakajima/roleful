@@ -11,10 +11,9 @@ module Roleful
   
   module InstanceMethods
     def with_role(*tmp_roles)
-      old = role
-      self.meta_def(:role) { tmp_roles }
+      old = meta_def(:role) {tmp_roles }
       result = yield
-      self.meta_def(:role) { old }
+      meta_eval { remove_method(:role) }
       result
     end
     
