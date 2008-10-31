@@ -42,7 +42,7 @@ module Roleful
     end
     
     def permission?(method)
-      method.match(/can_[a-zA-Z_]+\?/)
+      method.match(/can_(#{@klass::PERMISSIONS.to_a.join('|')})+\?/)
     end
     
     def predicate?(method)
