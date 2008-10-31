@@ -7,8 +7,8 @@ describe Roleful do
     @klass = Class.new do
       attr_reader :role
       
-      def initialize(role=:null)
-        @role = role
+      def initialize(*role)
+        @role = role.empty? ? :null : role
       end
       
       include Roleful
@@ -18,6 +18,12 @@ describe Roleful do
   it "adds ROLES to class" do
     proc {
       klass::ROLES
+    }.should_not raise_error
+  end
+  
+  it "adds PERMISSIONS to class" do
+    proc {
+      klass::PERMISSIONS
     }.should_not raise_error
   end
   
@@ -47,6 +53,12 @@ describe Roleful do
   describe "declaring role permissions" do
     before(:each) do
       klass.role(:admin) { can :view_foos }
+    end
+    
+    it "adds to PERMISSIONS" do
+      proc {
+        klass.role(:admin) { can :view_bars }
+      }.should change(klass::PERMISSIONS, :length)
     end
     
     it "works for declared roles" do
@@ -209,17 +221,17 @@ describe Roleful do
     end
     
     it "returns true for all role predicate helpers" do
-      klass.new([:foo, :bar]).should be_foo
-      klass.new([:foo, :bar]).should be_bar
+      klass.new(:foo, :bar).should be_foo
+      klass.new(:foo, :bar).should be_bar
     end
     
     it "grants permissions of all roles" do
-      klass.new([:foo, :bar]).can_be_foo?.should be_true
-      klass.new([:foo, :bar]).can_be_bar?.should be_true
+      klass.new(:foo, :bar).can_be_foo?.should be_true
+      klass.new(:foo, :bar).can_be_bar?.should be_true
     end
     
     it "handles invalid roles in collection" do
-      klass.new([:fizz, :foo, :bar]).can_be_foo?.should be_true
+      klass.new(:fizz, :foo, :bar).can_be_foo?.should be_true
     end
   end
   

@@ -55,13 +55,13 @@ User.new(:paid).can_view_all_pages? # => true
 User.new(:paid).can_view_all_files? # => false
 
 User.new(:admin).admin? # => true
-User.new(:paid).can?(:view_invoice) # => false
+User.new(:admin).can?(:view_invoice) # => false
 User.new(:admin).can_view_all_pages? # => true
 User.new(:admin).can_view_all_files? # => true
 
 User.new(:super_admin).can_view_all_pages? # => true
 User.new(:super_admin).can_view_all_files # => true
-User.new(:paid).can?(:view_invoice) # => true
+User.new(:super_admin).can?(:view_invoice) # => true
 </pre>
 
 h3. Declaring permissions for more than one role
