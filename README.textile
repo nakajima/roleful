@@ -156,4 +156,4 @@ h3. Install
 
 "View the CI build":http://ci.patnakajima.com/roleful
 
-(c) Copyright 2008 Pat Nakajima, released under the MIT license
+@(c) Copyright 2008 Pat Nakajima, released under the MIT license@

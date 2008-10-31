@@ -10,6 +10,14 @@ module Roleful
   end
   
   module InstanceMethods
+    def with_role(tmp_role)
+      old = role
+      self.meta_def(:role) { tmp_role }
+      result = yield
+      self.meta_def(:role) { old }
+      result
+    end
+
     private
     
     def role_proxy

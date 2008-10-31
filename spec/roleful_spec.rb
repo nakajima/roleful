@@ -222,4 +222,19 @@ describe Roleful do
       klass.new([:fizz, :foo, :bar]).can_be_foo?.should be_true
     end
   end
+  
+  describe "temporary role contexts" do
+    before(:each) do
+      klass.role(:awesome) do
+        can :be_awesome
+      end
+    end
+    
+    it "allows an object to have a role within a block" do
+      object = klass.new
+      object.can?(:be_awesome).should be_false
+      object.with_role(:awesome) { object.can?(:be_awesome).should be_true }
+      object.can?(:be_awesome).should be_false
+    end
+  end
 end
