@@ -27,6 +27,7 @@ class User
   
   role :paid do
     can :view_all_pages
+    can :view_invoice
   end
   
   def initialize(name=nil)
@@ -41,29 +42,106 @@ end
 </pre>
 
 <pre>
-nil_user = User.new
-nil_user.paid? # => false
-nil_user.admin? # => false
-nil_user.can_view_all_pages? # => false
-nil_user.can_view_all_files? # => false
+User.new(:paid).null? # => true
+User.new(:paid).can?(:view_invoice) # => false
+User.new(:paid).can_view_all_pages? # => false
+User.new(:paid).can_view_all_files? # => false
 
-paid_user = User.new(:paid)
-paid_user.paid? # => true
-paid_user.admin? # => false
-paid_user.can_view_all_pages? # => true
-paid_user.can_view_all_files? # => false
+User.new(:paid).paid? # => true
+User.new(:paid).can?(:view_invoice) # => true
+User.new(:paid).can_view_all_pages? # => true
+User.new(:paid).can_view_all_files? # => false
 
-admin_user = User.new(:admin)
-admin_user.paid? # => false
-admin_user.admin? # => true
-admin_user.can_view_all_pages? # => true
-admin_user.can_view_all_files # => true
+User.new(:admin).admin? # => true
+User.new(:paid).can?(:view_invoice) # => false
+User.new(:admin).can_view_all_pages? # => true
+User.new(:admin).can_view_all_files? # => true
 
-super_admin_user = User.new(:super_admin)
-super_admin_user.paid? # => false
-super_admin_user.admin? # => false
-super_admin_user.can_view_all_pages? # => true
-super_admin_user.can_view_all_files # => true
+User.new(:super_admin).can_view_all_pages? # => true
+User.new(:super_admin).can_view_all_files # => true
+User.new(:paid).can?(:view_invoice) # => true
+</pre>
+
+h3. Declaring permissions for more than one role
+
+Sometimes you want to add the same permission to multiple roles. To
+do this, simply pass multiple role names when calling @role@, and each
+of the roles will be granted the permissions declared in the block
+
+<pre>
+class User
+  role :foo, :bar do
+    can :be_both
+  end
+  
+  role :all do
+    can :pay_the_billz
+  end
+end
+</pre>
+
+<pre>
+User.new(:foo).can_be_both? # => true
+User.new(:bar).can_be_both? # => true
+User.new(:admin).can_be_both? # => false
+
+User.new(:foo).can_pay_the_billz? # => true
+User.new(:bar).can_pay_the_billz? # => true
+User.new(:admin).can_pay_the_billz? # => true
+
+# The :null role still returns false
+User.new(:null).can_pay_the_billz? # => false
+</pre>
+
+h3. Objects with more than one role
+
+If an object's @role@ returns an @Array@, then the object will be
+granted all of the roles in that @Array@.
+
+<pre>
+class User
+  role :foo do
+    can :be_foo
+  end
+  
+  role :bar do
+    can :be_bar
+  end
+end
+</pre>
+
+<pre>
+user = User.new([:foo, :bar])
+
+user.foo? # => true
+user.bar? # => true
+
+user.can_be_foo? # => true
+user.can_be_bar? # => true
+</pre>
+
+h3. Advanced Permissions
+
+Sometimes a permission is contingent upon some other conditions being
+met. You can handle these situations by passing the @can@ call a block.
+This block will be called in the context of your object:
+
+<pre>
+class User
+  role :thinker do
+    can :be_self do |that|
+      self == that
+    end
+  end
+end
+</pre>
+
+<pre>
+me  = User.new(:thinker)
+you = User.new(:thinker)
+
+me.can_be_self?(me) # => true
+me.can_be_self?(you) # => false
 </pre>
 
 h3. Install

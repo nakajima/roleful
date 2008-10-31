@@ -7,7 +7,7 @@ describe Roleful do
     @klass = Class.new do
       attr_reader :role
       
-      def initialize(role=nil)
+      def initialize(role=:null)
         @role = role
       end
       
@@ -44,7 +44,7 @@ describe Roleful do
     end
   end
   
-  describe "delegating permissions to role" do
+  describe "declaring role permissions" do
     before(:each) do
       klass.role(:admin) { can :view_foos }
     end
@@ -59,11 +59,37 @@ describe Roleful do
       object.can_view_foos?.should be_false
     end
     
+    it "does not add the same role more than once" do
+      proc {
+        klass.role(:admin) { can :view_bars }
+      }.should_not change(klass::ROLES, :length)
+    end
+    
+    it "does not add the same permission more than once to the same role" do
+      proc {
+        klass.role(:admin) { can :view_foos }
+      }.should_not change(klass::ROLES[:admin].permissions, :length)
+    end
+    
     describe "#can?" do
       context "as object with role" do
         it "returns true or false depending on the permission" do
           object = klass.new(:admin)
           object.can?(:view_foos).should be_true
+        end
+      end
+      
+      context "for superuser role" do
+        before(:each) do
+          klass.role(:super_admin, :superuser => true)
+        end
+        
+        it "returns true for existing permission" do
+          klass.new(:super_admin).can?(:view_foos).should be_true
+        end
+        
+        it "returns false when permission doesn't exist" do
+          klass.new(:super_admin).can?(:eat_cheese).should be_false
         end
       end
       
@@ -75,7 +101,7 @@ describe Roleful do
       end
     end
     
-    describe ":null role" do
+    context "for :null role" do
       it "returns false when permission exists elsewhere" do
         klass.new.can_view_foos?.should_not be
       end
@@ -85,10 +111,15 @@ describe Roleful do
           klass.new.can_eat_cheese?
         }.should raise_error(NoMethodError)
       end
+      
+      it "allows permissions to be declared" do
+        klass.role(:null) { can :be_null }
+        klass.new.can_be_null?.should be_true
+      end
     end
     
-    describe ":superuser role" do
-      it "is always true" do
+    context "for :superuser role" do
+      it "has all permissions" do
         klass.role(:super_admin, :superuser => true)
         object = klass.new(:super_admin)
         object.can_view_foos?.should be_true
@@ -100,20 +131,26 @@ describe Roleful do
     before(:each) do
       klass.role :admin do
         can(:be_self) { |that| self == that }
-        can(:equal_two) { |sym| :two == sym }
+        can(:be_two)  { |that| :two == that }
       end
     end
     
-    it "taking a block" do
+    it "takes a block" do
       object = klass.new(:admin)
-      object.can_equal_two?(:one).should be_false
-      object.can_equal_two?(:two).should be_true
+      object.can_be_two?(:one).should be_false
+      object.can_be_two?(:two).should be_true
     end
     
     context "as object with role" do
-      it "binding self to instance" do
+      it "binds self to instance" do
         object = klass.new(:admin)
         object.can_be_self?(object).should be_true
+      end
+      
+      it "work with #can? calls" do
+        object = klass.new(:admin)
+        object.can?(:be_self, object).should be_true
+        object.can?(:be_self, :other).should be_false
       end
     end
     
@@ -122,6 +159,67 @@ describe Roleful do
         object = klass.new
         object.can_be_self?(object).should be_false
       end
+      
+      it "work with #can? calls" do
+        object = klass.new
+        object.can?(:be_self, object).should be_false
+        object.can?(:be_self, :other).should be_false
+      end
+    end
+  end
+  
+  describe "declaring multiple roles at once" do
+    before(:each) do
+      klass.role :admin, :paid do
+        can :have_access
+      end
+    end
+    
+    describe "passing multiple role names" do
+      it "adds permissions to each role" do
+        klass.new(:admin).can_have_access?.should be_true
+        klass.new(:paid).can_have_access?.should be_true
+      end
+      
+      it "doesn't give permissions to null user" do
+        klass.new.can_have_access?.should be_false        
+      end
+    end
+    
+    describe "with :all option" do
+      before(:each) do
+        klass.role(:all) { can :do_anything }
+      end
+      
+      it "adds permissions to all non-null roles" do
+        klass.new(:admin).can_do_anything?.should be_true
+        klass.new(:paid).can_do_anything?.should be_true
+      end
+      
+      it "doesn't add permissions to null role" do
+        klass.new.can_do_anything?.should be_false
+      end
+    end
+  end
+  
+  describe "having multiple roles" do
+    before(:each) do
+      klass.role(:foo) { can :be_foo }
+      klass.role(:bar) { can :be_bar }
+    end
+    
+    it "returns true for all role predicate helpers" do
+      klass.new([:foo, :bar]).should be_foo
+      klass.new([:foo, :bar]).should be_bar
+    end
+    
+    it "grants permissions of all roles" do
+      klass.new([:foo, :bar]).can_be_foo?.should be_true
+      klass.new([:foo, :bar]).can_be_bar?.should be_true
+    end
+    
+    it "handles invalid roles in collection" do
+      klass.new([:fizz, :foo, :bar]).can_be_foo?.should be_true
     end
   end
 end
