@@ -1,18 +1,18 @@
 module Roleful
   class Role
-    attr_reader :name, :permissions, :permission_handlers, :options
+    attr_reader :name, :permissions, :handlers, :options
     
     def initialize(klass, name, options={})
       @klass, @name, @options = klass, name, options
       @permissions = Set.new
-      @permission_handlers = { }
-      define_predicate
+      @handlers = { }
+      define_predicates
     end
 
     def can(permission, &block)
       permission_name = "can_#{permission}?"
       
-      permission_handlers[permission] = block || proc { true }
+      handlers[permission] = block || proc { true }
       meta_def(permission_name) { |target, *args| handle(target, permission, *args) }
       
       meta_delegate(permission_name)
@@ -20,7 +20,9 @@ module Roleful
     end
     
     def can?(target, permission, *args)
-      superuser? ? @klass::PERMISSIONS.include?(permission) : handle(target, permission, *args)
+      superuser? ?
+        @klass::PERMISSIONS.include?(permission) : 
+        handle(target, permission, *args)
     end
     
     def method_missing(sym, *args)
@@ -31,12 +33,8 @@ module Roleful
     private
     
     def handle(target, permission, *args)
-      return false if permission_handlers[permission].nil?
-      target.instance_exec(*args, &permission_handlers[permission])
-    end
-    
-    def match_permission_or_predicate?(method_id)
-      permission?(method_id) or predicate?(method_id)
+      return false if handlers[permission].nil?
+      target.instance_exec(*args, &handlers[permission])
     end
     
     def superuser?
@@ -51,7 +49,11 @@ module Roleful
       method.match(/(#{@klass::ROLES.keys.join('|')})\?/)
     end
     
-    def define_predicate
+    def match_permission_or_predicate?(method_id)
+      permission?(method_id) or predicate?(method_id)
+    end
+    
+    def define_predicates
       meta_def("#{name}?") { true }
       meta_delegate("#{name}?")
       meta_delegate("can?")

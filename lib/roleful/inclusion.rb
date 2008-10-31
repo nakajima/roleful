@@ -15,7 +15,7 @@ module Roleful
     def role_proxy
       begin
         name = (role || :null).is_a?(Array) ?
-          role_map :
+          map_roles :
           self.class::ROLES[role.to_sym]
       rescue => e
         warn "#{role.inspect}: #{e}"
@@ -23,7 +23,7 @@ module Roleful
       end
     end
     
-    def role_map
+    def map_roles
       role.map { |name| self.class::ROLES[name.to_s.to_sym] }.compact
     end
   end
