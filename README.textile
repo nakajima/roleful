@@ -44,10 +44,10 @@ end
 gets you:
 
 <pre>
-User.new(:paid).null? # => true
-User.new(:paid).can?(:view_invoice) # => false
-User.new(:paid).can_view_all_pages? # => false
-User.new(:paid).can_view_all_files? # => false
+User.new(:null).null? # => true
+User.new(:null).can?(:view_invoice) # => false
+User.new(:null).can_view_all_pages? # => false
+User.new(:null).can_view_all_files? # => false
 
 User.new(:paid).paid? # => true
 User.new(:paid).can?(:view_invoice) # => true
