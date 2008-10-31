@@ -41,6 +41,8 @@ class User
 end
 </pre>
 
+gets you:
+
 <pre>
 User.new(:paid).null? # => true
 User.new(:paid).can?(:view_invoice) # => false
@@ -66,7 +68,11 @@ h3. Declaring permissions for more than one role
 
 Sometimes you want to add the same permission to multiple roles. To
 do this, simply pass multiple role names when calling @role@, and each
-of the roles will be granted the permissions declared in the block
+of the roles will be granted the permissions declared in the block.
+
+Alternatively, you can just pass @:all@ to @role@, and all of your roles
+besides the @:null@ role will be granted the permissions declared in
+the block.
 
 <pre>
 class User
