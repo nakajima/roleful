@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.authors = ["Pat Nakajima"]
   s.date = %q{2008-10-27}
   s.email = %q{patnakajima@gmail.com}
-  s.files = ["lib/core_ext", "lib/core_ext/module.rb", "lib/roleful", "lib/roleful/inclusion.rb", "lib/roleful/role.rb", "lib/roleful.rb"]
+  s.files = ["lib/core_ext", "lib/core_ext/array.rb", "lib/core_ext/object.rb", "lib/core_ext/proc.rb", "lib/roleful", "lib/roleful/inclusion.rb", "lib/roleful/role.rb", "lib/roleful.rb"]
   s.homepage = %q{http://github.com/nakajima/roleful}
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.0}
