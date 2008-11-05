@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.authors = ["Pat Nakajima"]
   s.date = %q{2008-10-27}
   s.email = %q{patnakajima@gmail.com}
-  s.files = ["lib/core_ext", "lib/core_ext/array.rb", "lib/core_ext/object.rb", "lib/core_ext/proc.rb", "lib/roleful", "lib/roleful/inclusion.rb", "lib/roleful/role.rb", "lib/roleful.rb"]
+  s.files = ["lib/roleful", "lib/roleful/inclusion.rb", "lib/roleful/role.rb", "lib/roleful.rb"]
   s.homepage = %q{http://github.com/nakajima/roleful}
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.0}
@@ -20,10 +20,13 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<metaid>, [">= 0"])
+      s.add_runtime_dependency(%q<nakajima-nakajima>, ['>= 0'])
     else
       s.add_dependency(%q<metaid>, [">= 0"])
+      s.add_dependency(%q<nakajima-nakajima>, ['>= 0'])
     end
   else
+    s.add_dependency(%q<nakajima-nakajima>, ['>= 0'])
     s.add_dependency(%q<metaid>, [">= 0"])
   end
 end

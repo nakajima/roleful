@@ -1,14 +1,8 @@
 $LOAD_PATH << File.dirname(__FILE__) + '/roleful'
-$LOAD_PATH << File.dirname(__FILE__) + '/core_ext'
 
 require 'rubygems'
-require 'metaid'
+require 'nakajima'
 require 'set'
-
-require 'array'
-require 'proc'
-require 'object'
-
 require 'role'
 require 'inclusion'
 
