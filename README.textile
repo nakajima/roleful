@@ -202,12 +202,7 @@ user.can_do_anything? # => false
 
 h3. Install
 
-Make sure you you have the @nakajima@ gem. This is where I manage my common
-extensions:
-
-  gem install nakajima-nakajima --source=http://gems.github.com
-
-Then install roleful like so:
+Install roleful like so:
 
   gem install nakajima-roleful --source=http://gems.github.com
 
