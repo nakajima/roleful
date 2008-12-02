@@ -21,12 +21,6 @@ module Roleful
       register_permission(sym)
     end
     
-    def can?(target, permission, *args)
-      superuser? ?
-        @klass::PERMISSIONS.include?(permission) : 
-        handle(target, permission, *args)
-    end
-    
     # Used when the permission in question is granted for the
     # role in question. TODO: Is this really necessary?
     def method_missing(sym, *args)
@@ -35,6 +29,12 @@ module Roleful
     end
     
     private
+    
+    def can?(target, permission, *args)
+      superuser? ?
+        @klass::PERMISSIONS.include?(permission) : 
+        handle(target, permission, *args)
+    end
     
     def handle(target, permission, *args)
       return false if handlers[permission].nil?
@@ -45,10 +45,12 @@ module Roleful
       options[:superuser] || false # returns false, not nil
     end
     
+    # TODO memoize the generated regex
     def permission?(method)
       method.match(/can_(#{@klass::PERMISSIONS.to_a.join('|')})+\?/)
     end
     
+    # TODO memoize the generated regex
     def predicate?(method)
       method.match(/(#{@klass::ROLES.keys.join('|')})\?/)
     end
