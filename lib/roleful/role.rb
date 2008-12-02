@@ -9,14 +9,16 @@ module Roleful
       define_predicates
     end
 
-    def can(permission, &block)
-      permission_name = "can_#{permission}?"
+    def can(sym, &block)
+      handlers[sym] = block || proc { true }
       
-      handlers[permission] = block || proc { true }
-      meta_def(permission_name) { |target, *args| handle(target, permission, *args) }
-      
-      meta_delegate(permission_name)
-      add_permission(permission)
+      metaclass.class_eval(<<-END, __FILE__, __LINE__)
+        def can_#{sym}?(target, *args)
+          handle(target, #{sym.inspect}, *args)
+        end
+      END
+
+      register_permission(sym)
     end
     
     def can?(target, permission, *args)
@@ -25,6 +27,8 @@ module Roleful
         handle(target, permission, *args)
     end
     
+    # Used when the permission in question is granted for the
+    # role in question. TODO: Is this really necessary?
     def method_missing(sym, *args)
       method_id = sym.to_s
       match_permission_or_predicate?(method_id) ? superuser? : super
@@ -55,17 +59,18 @@ module Roleful
     
     def define_predicates
       meta_def("#{name}?") { true }
-      meta_delegate("#{name}?")
-      meta_delegate("can?")
+      delegate_predicate("#{name}?")
+      delegate_predicate("can?")
     end
     
-    def add_permission(permission)
+    def register_permission(permission)
       permission = permission.to_sym
       @permissions.add(permission)
       @klass::PERMISSIONS.merge(@permissions)
+      delegate_predicate("can_#{permission}?")
     end
     
-    def meta_delegate(name)
+    def delegate_predicate(name)
       @klass.delegate_permission name, :to => :role_proxy
     end
   end

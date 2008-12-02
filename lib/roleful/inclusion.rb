@@ -10,10 +10,12 @@ module Roleful
   end
   
   module InstanceMethods
+    # Gives an object temporary roles for the duration of the block.
     def with_role(*tmp_roles)
-      old = meta_def(:role) {tmp_roles }
+      old_role = method(:role)
+      meta_def(:role) { tmp_roles }
       result = yield
-      meta_eval { remove_method(:role) }
+      meta_eval { define_method(:role, old_role) }
       result
     end
     
@@ -44,9 +46,10 @@ module Roleful
       roles.each { |name| define_role(name.to_sym, options, &block) }
     end
     
-    # Adapted from ActiveSupport, modified a bit to ease binding contexts
+    # Delegates method calls to the object's #role_proxy, accounting for
+    # cases when there are multiple roles for the given object.
     def delegate_permission(*methods)
-      options = methods.pop    
+      options = methods.pop
       raise ArgumentError, "Delegation needs a target." unless options.is_a?(Hash) && to = options[:to]
 
       methods.each do |method|

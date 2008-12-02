@@ -36,7 +36,7 @@ describe Roleful do
     klass::ROLES[:admin].should_not be_nil
   end
   
-  describe "role predicate helpers" do
+  describe "role name predicate helpers" do
     before(:each) do
       klass.role :admin
     end
@@ -135,6 +135,41 @@ describe Roleful do
         klass.role(:super_admin, :superuser => true)
         object = klass.new(:super_admin)
         object.can_view_foos?.should be_true
+      end
+    end
+  end
+  
+  describe "permission methods" do
+    before(:each) do
+      klass.role(:paid)
+      klass.role(:admin) { can :view_foos }
+    end
+    
+    context "for roles that have permission" do
+      before(:each) do
+        @object = klass.new(:admin)
+      end
+      
+      it "returns true" do
+        object.can_view_foos?.should be_true
+      end
+      
+      it "are known to be responded to" do
+        object.respond_to?(:can_view_foos?).should be_true
+      end
+    end
+    
+    context "for roles that don't have permission" do
+      before(:each) do
+        @object = klass.new(:paid)
+      end
+      
+      it "returns false" do
+        object.can_view_foos?.should be_false
+      end
+      
+      it "is known to be responded to" do
+        object.respond_to?(:can_view_foos?).should be_true
       end
     end
   end
@@ -245,11 +280,8 @@ describe Roleful do
       object = klass.new
       object.can?(:be_awesome).should be_false
       
-      spec = self
-      object.instance_eval do
-        with_role(:awesome) do
-          can?(:be_awesome).should spec.be_true
-        end
+      object.with_role(:awesome) do
+        object.can?(:be_awesome).should be_true
       end
 
       object.can?(:be_awesome).should be_false
@@ -261,16 +293,33 @@ describe Roleful do
       object.can?(:be_awesome).should be_false
       object.can?(:be_bad_ass).should be_false
       
-      spec = self
-      object.instance_eval do
-        with_roles(:awesome, :bad_ass) do
-          can?(:be_awesome).should spec.be_true
-          can?(:be_bad_ass).should spec.be_true
-        end
+      object.with_roles(:awesome, :bad_ass) do
+        object.can?(:be_awesome).should be_true
+        object.can?(:be_bad_ass).should be_true
       end
       
       object.can?(:be_awesome).should be_false
       object.can?(:be_bad_ass).should be_false
+    end
+    
+    it "restores old singleton methods" do
+      object = klass.new
+      class << object
+        def role
+          :awesome
+        end
+      end
+      
+      object.should be_awesome
+      object.can?(:be_awesome).should be_true
+      
+      object.with_role(:bad_ass) do
+        object.should be_bad_ass
+        object.can?(:be_bad_ass).should be_true
+      end
+      
+      object.should be_awesome
+      object.can?(:be_awesome)
     end
   end
 end
