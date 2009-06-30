@@ -2,6 +2,8 @@ h1. Role-ful
 
 Roles for you and your objects.
 
+Like it? Then please "recommend me on Working with Rails":http://www.workingwithrails.com/person/7973-pat-nakajima.
+
 h3. Usage
 
 In your class, after including @Roleful@, declare your roles. It's up
@@ -206,6 +208,6 @@ Install roleful like so:
 
   gem install nakajima-roleful --source=http://gems.github.com
 
-"View the CI build":http://ci.patnakajima.com/roleful
+"View the CI build":http://ci.patnakajima.com/nakajima-roleful
 
 @(c) Copyright 2008 Pat Nakajima, released under the MIT license@
