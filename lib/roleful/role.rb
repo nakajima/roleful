@@ -10,7 +10,7 @@ module Roleful
     end
 
     def can(sym, &block)
-      handlers[sym] = block || proc { true }
+      handlers[sym] = block || proc { |arg| true }
       
       metaclass.class_eval(<<-END, __FILE__, __LINE__)
         def can_#{sym}?(target, *args)
@@ -60,7 +60,7 @@ module Roleful
     end
     
     def define_predicates
-      meta_def("#{name}?") { true }
+      meta_def("#{name}?") { |arg| true }
       delegate_predicate("#{name}?")
       delegate_predicate("can?")
     end
