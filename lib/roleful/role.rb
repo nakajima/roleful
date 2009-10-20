@@ -10,7 +10,11 @@ module Roleful
     end
 
     def can(sym, &block)
-      handlers[sym] = block || proc { |arg| true }
+      handlers[sym] = block || if RUBY_VERSION < "1.9.0"
+        proc { true }
+      else
+        proc { |arg| true }
+      end
       
       metaclass.class_eval(<<-END, __FILE__, __LINE__)
         def can_#{sym}?(target, *args)
@@ -60,7 +64,11 @@ module Roleful
     end
     
     def define_predicates
-      meta_def("#{name}?") { |arg| true }
+      if RUBY_VERSION < "1.9.0"
+        meta_def("#{name}?") { true }
+      else
+        meta_def("#{name}?") { |arg| true }
+      end
       delegate_predicate("#{name}?")
       delegate_predicate("can?")
     end
