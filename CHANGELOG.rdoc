@@ -1,0 +1,31 @@
+== 1.0.0
+
+I'm using it in production. Aren't you?
+
+* Meta
+
+  * Added bundler support.
+  * Development dependencies in the gemspec reflect reality.
+  * Use rspec 2.
+  * CHANGELOG.rdoc (this file!) added.
+  * Some code cleanup and rubygem citizenship improvement.
+
+* Bugfixes
+
+  * Explicitly namespace references to Role. [Github issue #2]
+
+* Features
+
+  * No longer reopen Array.
+
+== 0.0.4
+
+The result of pestering Pat with small rocks tossed at his head.
+
+* Bugfixes
+
+  * Remove block-argument warnings under Ruby 1.9. [Github issue #1]
+
+== 0.0.3
+
+The first usable version, really. Who are we kidding?
