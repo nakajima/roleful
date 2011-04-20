@@ -41,7 +41,7 @@ module Roleful
   
   module ClassMethods
     def role(*args, &block)
-      options = args.extract_options!
+      options = args.last.is_a?(Hash) ? args.pop : {}
       roles = [:all].eql?(args) ? all_roles : args
       roles.each { |name| define_role(name.to_sym, options, &block) }
     end

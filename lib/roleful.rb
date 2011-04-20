@@ -3,8 +3,7 @@ module Roleful
 end
 
 # Core extensions
-require 'roleful/core_ext/object'  unless respond_to?(:instance_exec)
-require 'roleful/core_ext/array'   unless [].respond_to?(:extract_options!)
+require 'roleful/core_ext/object'
 
 # Project files
 require 'roleful/role'

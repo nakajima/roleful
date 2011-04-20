@@ -9,10 +9,9 @@ Gem::Specification.new do |s|
   s.date = %q{2008-10-27}
   s.email = %q{patnakajima@gmail.com}
   s.files = [
-    "lib/core_ext",
-    "lib/core_ext/array.rb",
-    "lib/core_ext/object.rb",
     "lib/roleful",
+    "lib/roleful/core_ext",
+    "lib/roleful/core_ext/object.rb",
     "lib/roleful/inclusion.rb",
     "lib/roleful/role.rb",
     "lib/roleful.rb"
