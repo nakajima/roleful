@@ -71,7 +71,7 @@ module Roleful
     end
     
     def define_role(name, options={}, &block)
-      self::ROLES[name] ||= Role.new(self, name, options)
+      self::ROLES[name] ||= Roleful::Role.new(self, name, options)
       self::ROLES[name].instance_eval(&block) if block_given?
     end
   end
